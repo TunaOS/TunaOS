@@ -1,0 +1,59 @@
+--TunaOS Windows API
+--(C)StrikePoint Studios 2012
+function newWindow(x, y, title)
+	local tX, tY = term.getSize()
+	local sX = (tX - x) / 2
+	local sY = (tY - y) / 2
+	local tLength = string.len(title)
+	local tStart = x - tLength
+	local eX = sX + x
+	local eY = sY
+	tStart = tStart / 2
+	term.setCursorPos(sX, sY)
+	term.setBackgroundColor(colors.blue)
+	for i = 0, tStart, 1 do
+		term.write(" ")
+	end
+	term.write(title)
+	for i = 0, tStart, 1 do
+		term.write(" ")
+	end
+	term.setCursorPos(eX, eY)
+	term.setTextColor(colors.red)
+	term.write("X")
+	term.setBackgroundColor(colors.gray)
+	for i = 1, y, 1 do
+		term.setCursorPos(sX, sY + i)
+		for ai = 0, x, 1 do
+			term.write(" ")
+		end
+	end
+	local mB, mX, mY = os.pullEvent("mouse_click")
+	if mB == 1 and mX == eX and mY == eY then
+		term.setBackgroundColor(colors.black)
+		term.setCursorPos(sX, sY)
+		for i = 0, x, 1 do
+			term.write(" ")
+		end
+		for i = 1, y, 1 do
+			term.setCursorPos(sX, sY + i)
+			for ai = 0, x, 1 do
+				term.write(" ")
+			end
+		end
+	end
+end
+
+function newDesktop()
+	local tX, tY = term.getSize()
+	term.setCursorPos(0, 0)
+	term.setBackgroundColor(colors.white)
+	for i = 0, tX, 1 do
+		term.write("d")
+	end
+	for i = 1, tY + 1, 1 do
+		for ai = 0, tX, 1 do
+			term.write(" ")
+		end
+	end
+end
