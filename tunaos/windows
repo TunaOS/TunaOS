@@ -12,11 +12,15 @@ function newWindow(x, y, title)
 	term.setCursorPos(sX, sY)
 	term.setBackgroundColor(colors.blue)
 	for i = 0, tStart, 1 do
-		term.write(" ")
+		term.write("=")
 	end
 	term.write(title)
-	for i = 0, tStart, 1 do
-		term.write(" ")
+	local tEnd = tStart
+	if ((tStart * 2) + tLength >= x) then
+		tEnd = tEnd - 1
+	end
+	for i = 0, tEnd, 1 do
+		term.write("=")
 	end
 	term.setCursorPos(eX, eY)
 	term.setTextColor(colors.red)
