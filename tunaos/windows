@@ -1,16 +1,31 @@
 --TunaOS Windows API
 --(C)StrikePoint Studios 2012
-function newWindow(x, y, title)
+Windows = {index = 0}
+function newWindow(x, y, title, cont)
+	Windows.index = Windows.index + 1
+	local ix = Windows.index
 	local tX, tY = term.getSize()
 	local sX = (tX - x) / 2
-	local sY = (tY - y) / 2
+	local sY = math.floor((tY - y) / 2)
 	local tLength = string.len(title)
 	local tStart = x - tLength
 	local eX = sX + x
 	local eY = sY
+	local content = cont
+	local cLength = string.len(content)
+	local csX = x - cLength
+	csX = sX + csX
+	local csY = sY + math.floor(y / 2)
 	tStart = tStart / 2
 	term.setCursorPos(sX, sY)
 	term.setBackgroundColor(colors.blue)
+	if (cLength > x) then
+		cont = "!"
+		cLength = 1
+		csX = x - cLength
+		csX = sX + csX
+		csY = sY + math.floor(y / 2)
+	end
 	for i = 0, tStart, 1 do
 		term.write("=")
 	end
@@ -32,32 +47,101 @@ function newWindow(x, y, title)
 			term.write(" ")
 		end
 	end
-	local mB, mX, mY = os.pullEvent("mouse_click")
-	if mB == 1 and mX == eX and mY == eY then
-		term.setBackgroundColor(colors.black)
-		term.setCursorPos(sX, sY)
-		for i = 0, x, 1 do
-			term.write(" ")
-		end
-		for i = 1, y, 1 do
-			term.setCursorPos(sX, sY + i)
-			for ai = 0, x, 1 do
+	term.setCursorPos(csX, csY)
+	term.setTextColor(colors.black)
+	term.write(cont)
+	local isOpen = true
+	while true do
+		local m1, m2, mX, mY = os.pullEvent("mouse_click")
+		if mX == eX and mY == eY then
+			term.setBackgroundColor(colors.white)
+			term.setCursorPos(sX, sY)
+			for i = 0, x, 1 do
 				term.write(" ")
 			end
+			for i = 1, y, 1 do
+				term.setCursorPos(sX, sY + i)
+				for ai = 0, x, 1 do
+					term.write(" ")
+				end
+			end
+			isOpen = false
+		end
+		if mX >= tStart and mX < eX and mY == sY and isOpen then
+			local m1, m2, mX, mY = os.pullEvent("mouse_click")
+			term.setTextColor(colors.white)
+			term.setBackgroundColor(colors.white)
+			term.setCursorPos(sX, sY)
+			for i = 0, x, 1 do
+				term.write(" ")
+			end
+			for i = 1, y, 1 do
+				term.setCursorPos(sX, sY + i)
+				for ai = 0, x, 1 do
+					term.write(" ")
+				end
+			end
+			sX = mX
+			sY = mY
+			eX = sX + x
+			eY = sY
+			term.setCursorPos(sX, sY)
+			term.setBackgroundColor(colors.blue)
+			for i = 0, tStart, 1 do
+				term.write("=")
+			end
+			term.write(title)
+			tEnd = tStart
+			if ((tStart * 2) + tLength >= x) then
+				tEnd = tEnd - 1
+			end
+			for i = 0, tEnd, 1 do
+				term.write("=")
+			end
+			term.setCursorPos(eX, eY)
+			term.setTextColor(colors.red)
+			term.write("X")
+			term.setBackgroundColor(colors.gray)
+			for i = 1, y, 1 do
+				term.setCursorPos(sX, sY + i)
+				for ai = 0, x, 1 do
+					term.write(" ")
+				end
+			end
+			csX = x - cLength
+			csX = sX + csX
+			csY = sY + math.floor(y / 2)
+			term.setCursorPos(csX, csY)
+			term.setTextColor(colors.black)
+			term.write(cont)
 		end
 	end
+	--Just in case
+	term.setBackgroundColor(colors.black)
+	return {ix, x, y, eX, eY, content, title}
+end
+
+function addContent(pIx, pX, pY, pContent, pTitle, add)
+	
 end
 
 function newDesktop()
 	local tX, tY = term.getSize()
-	term.setCursorPos(0, 0)
+	term.setCursorPos(1, 1)
 	term.setBackgroundColor(colors.white)
 	for i = 0, tX, 1 do
-		term.write("d")
+		term.write(" ")
 	end
 	for i = 1, tY + 1, 1 do
+		term.setCursorPos(1, i)
 		for ai = 0, tX, 1 do
 			term.write(" ")
 		end
 	end
+end
+
+function closeDesktop()
+	term.setBackgroundColor(colors.black)
+	term.clear()
+	term.setCursorPos(1, 1)
 end
