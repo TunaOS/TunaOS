@@ -1,0 +1,9 @@
+function updateClock()
+	term.setTextColor(colors.orange)
+	local tX, tY = term.getSize()
+	local c = os.time()
+	c = textutils.formatTime(c, false)
+	local cLength = string.len(c)
+	term.setCursorPos(tX - cLength, tY)
+	term.write(c)
+end

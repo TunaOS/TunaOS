@@ -1,6 +1,7 @@
 --TunaOS Windows API
 --(C)StrikePoint Studios 2012
 Windows = {index = 0}
+os.loadAPI("rom/tunaos/clock")
 function newWindow(x, y, title, cont)
 	Windows.index = Windows.index + 1
 	local ix = Windows.index
@@ -19,6 +20,7 @@ function newWindow(x, y, title, cont)
 	tStart = tStart / 2
 	term.setCursorPos(sX, sY)
 	term.setBackgroundColor(colors.blue)
+	term.setTextColor(colors.white)
 	if (cLength > x) then
 		cont = "!"
 		cLength = 1
@@ -115,6 +117,7 @@ function newWindow(x, y, title, cont)
 			term.setTextColor(colors.black)
 			term.write(cont)
 		end
+		updateDesktop()
 	end
 	--Just in case
 	term.setBackgroundColor(colors.black)
@@ -123,6 +126,16 @@ end
 
 function addContent(pIx, pX, pY, pContent, pTitle, add)
 	
+end
+
+function updateDesktop()
+	local tX, tY = term.getSize()
+	term.setCursorPos(1, tY)
+	term.setBackgroundColor(colors.blue)
+	for i = 0, tX, 1 do
+		term.write(" ")
+	end
+	clock.updateClock()
 end
 
 function newDesktop()
@@ -137,6 +150,11 @@ function newDesktop()
 		for ai = 0, tX, 1 do
 			term.write(" ")
 		end
+	end
+	term.setCursorPos(1, tY)
+	term.setBackgroundColor(colors.blue)
+	for i = 0, tX, 1 do
+		term.write(" ")
 	end
 end
 
