@@ -1,165 +1,131 @@
---TunaOS Windows API
---(C)StrikePoint Studios 2012
-Windows = {index = 0}
-os.loadAPI("rom/tunaos/clock")
-function newWindow(x, y, title, cont)
-	Windows.index = Windows.index + 1
-	local ix = Windows.index
-	local tX, tY = term.getSize()
-	local sX = (tX - x) / 2
-	local sY = math.floor((tY - y) / 2)
-	local tLength = string.len(title)
-	local tStart = x - tLength
-	local eX = sX + x
-	local eY = sY
-	local content = cont
-	local cLength = string.len(content)
-	local csX = x - cLength
-	csX = sX + csX
-	local csY = sY + math.floor(y / 2)
-	tStart = tStart / 2
-	term.setCursorPos(sX, sY)
-	term.setBackgroundColor(colors.blue)
+--  
+--  Windows API
+--  Created By GravityScore
+--  Concept By Tuogex
+--  
+
+
+--  -------- Content Class
+
+Content = {}
+Content.__index = Content
+
+function Content.new()
+	local cont = {}
+	setmetatable(cont, Content)
+
+	cont._env = {}
+	cont._board = {}
+
+	return cont
+end
+
+function Content:beginDrawing()
+	self._env = {}
+	self._env.term = {}
+	for k, v in pairs(term) do self._env.term[k] = v end
+	self._env.shell = {}
+	for k, v in pairs(shell) do self._env.shell[k] = v end
+	self._env.print = print
+
+	term.write = function(text)
+		self._env.term.write(text)
+	end
+
+	term.setCursorPos = function(x, y)
+		self._env.term.setCursorPos(x, y)
+	end
+end
+
+function Content:endDrawing()
+	term = {}
+	for k, v in pairs(self._env.term) do term[k] = v end
+	shell = {}
+	for k, v in pairs(self._env.shell) do shell[k] = v end
+	print = self._env.print
+
+	self._env = {}
+end
+
+function Content:_draw(x, y, width, height)
+
+end
+
+
+--  -------- Window Class
+
+Window = {}
+Window.__index = Window
+
+function Window.new(iden)
+	local win = {}
+	setmetatable(win, Window)
+
+	win.x = 0
+	win.y = 0
+	win.width = 0
+	win.height = 0
+	win.level = 1
+	win.title = "Window"
+	win._id = iden
+	win.content = {}
+
+	return win
+end
+
+function Window:_draw()
+	self.content:draw(self.x, self.y, self.width, self.height)
+end
+
+
+--  -------- Desktop Class
+
+Desktop = {}
+Desktop.__index = Desktop
+
+function Desktop.new()
+	local desk = {}
+	setmetatable(desk, Desktop)
+
+	desk.windows = {}
+	desk.background = colors.black
+	desk.title = "Desktop 1"
+
+	return desk
+end
+
+function Desktop:addWindow(win, iden)
+	win._id = iden
+
+end
+
+function Desktop:load()
 	term.setTextColor(colors.white)
-	if (cLength > x) then
-		cont = "!"
-		cLength = 1
-		csX = x - cLength
-		csX = sX + csX
-		csY = sY + math.floor(y / 2)
-	end
-	for i = 0, tStart, 1 do
-		term.write("=")
-	end
-	term.write(title)
-	local tEnd = tStart
-	if ((tStart * 2) + tLength >= x) then
-		tEnd = tEnd - 1
-	end
-	for i = 0, tEnd, 1 do
-		term.write("=")
-	end
-	term.setCursorPos(eX, eY)
-	term.setTextColor(colors.red)
-	term.write("X")
-	term.setBackgroundColor(colors.gray)
-	for i = 1, y, 1 do
-		term.setCursorPos(sX, sY + i)
-		for ai = 0, x, 1 do
-			term.write(" ")
-		end
-	end
-	term.setCursorPos(csX, csY)
-	term.setTextColor(colors.black)
-	term.write(cont)
-	local isOpen = true
-	while true do
-		local m1, m2, mX, mY = os.pullEvent("mouse_click")
-		if mX == eX and mY == eY then
-			term.setBackgroundColor(colors.white)
-			term.setCursorPos(sX, sY)
-			for i = 0, x, 1 do
-				term.write(" ")
-			end
-			for i = 1, y, 1 do
-				term.setCursorPos(sX, sY + i)
-				for ai = 0, x, 1 do
-					term.write(" ")
-				end
-			end
-			isOpen = false
-		end
-		if mX >= tStart and mX < eX and mY == sY and isOpen then
-			local m1, m2, mX, mY = os.pullEvent("mouse_click")
-			term.setTextColor(colors.white)
-			term.setBackgroundColor(colors.white)
-			term.setCursorPos(sX, sY)
-			for i = 0, x, 1 do
-				term.write(" ")
-			end
-			for i = 1, y, 1 do
-				term.setCursorPos(sX, sY + i)
-				for ai = 0, x, 1 do
-					term.write(" ")
-				end
-			end
-			sX = mX
-			sY = mY
-			eX = sX + x
-			eY = sY
-			term.setCursorPos(sX, sY)
-			term.setBackgroundColor(colors.blue)
-			for i = 0, tStart, 1 do
-				term.write("=")
-			end
-			term.write(title)
-			tEnd = tStart
-			if ((tStart * 2) + tLength >= x) then
-				tEnd = tEnd - 1
-			end
-			for i = 0, tEnd, 1 do
-				term.write("=")
-			end
-			term.setCursorPos(eX, eY)
-			term.setTextColor(colors.red)
-			term.write("X")
-			term.setBackgroundColor(colors.gray)
-			for i = 1, y, 1 do
-				term.setCursorPos(sX, sY + i)
-				for ai = 0, x, 1 do
-					term.write(" ")
-				end
-			end
-			csX = x - cLength
-			csX = sX + csX
-			csY = sY + math.floor(y / 2)
-			term.setCursorPos(csX, csY)
-			term.setTextColor(colors.black)
-			term.write(cont)
-		end
-		updateDesktop()
-	end
-	--Just in case
-	term.setBackgroundColor(colors.black)
-	return {ix, x, y, eX, eY, content, title}
-end
-
-function addContent(pIx, pX, pY, pContent, pTitle, add)
-	
-end
-
-function updateDesktop()
-	local tX, tY = term.getSize()
-	term.setCursorPos(1, tY)
-	term.setBackgroundColor(colors.blue)
-	for i = 0, tX, 1 do
-		term.write(" ")
-	end
-	clock.updateClock()
-end
-
-function newDesktop()
-	local tX, tY = term.getSize()
-	term.setCursorPos(1, 1)
-	term.setBackgroundColor(colors.white)
-	for i = 0, tX, 1 do
-		term.write(" ")
-	end
-	for i = 1, tY + 1, 1 do
-		term.setCursorPos(1, i)
-		for ai = 0, tX, 1 do
-			term.write(" ")
-		end
-	end
-	term.setCursorPos(1, tY)
-	term.setBackgroundColor(colors.blue)
-	for i = 0, tX, 1 do
-		term.write(" ")
-	end
-end
-
-function closeDesktop()
 	term.setBackgroundColor(colors.black)
 	term.clear()
 	term.setCursorPos(1, 1)
+
+	term.setBackgroundColor(colors.gray)
+	term.clearLine()
+	term.setCursorPos(2, 1)
+	write(self.title)
+
+	local function drawWindows()
+		for k, v in pairs(self.windows) do
+			
+		end
+	end
+
+	drawWindows()
+
+	--[[while true do
+		local e, but, x, y = os.pullEvent()
+		if e == "mouse_click" then
+
+		elseif e == "mouse_drag" then
+
+		end
+
+		drawWindows()
+	end]]
 end

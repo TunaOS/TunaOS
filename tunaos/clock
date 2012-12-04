@@ -1,3 +1,9 @@
+--  
+--  Clock API
+--  Created By Tuogex
+--  DEPRECATED
+-- 
+
 function updateClock()
 	term.setTextColor(colors.orange)
 	local tX, tY = term.getSize()
